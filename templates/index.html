@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Socket-IO WMS-OBERS</title>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <script type="text/javascript" charset="pt_BR.utf-8">
+            
+            // Use "/test" namespace.
+            // Um aplicativo pode abrir uma conexaççço em varios namespaces e
+            // Socket.IO multiplexara todas essas conexoes em um unico
+            // canal fisico. Se voce nao se importa com varios canais, voce
+            // pode definir o namespace como uma string vazia.
+
+         $(document).ready(function() {
+            namespace = '/test';
+
+            // Conecte-se ao servidor Socket.IO.
+            // O URL de conexao tem o seguinte formato:
+            // http [s]: // <dominio>: <port> [/ <namespace>]
+
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+            // Manipulador de eventos para novas conexoes.
+            // A funcao de retorno de chamada e chamada quando uma conexao com o
+            // servidor e estabelecido.
+
+            socket.on('connect', function() {
+                socket.emit('my_event', {data: 'I\'m connected!'});
+            });
+
+            // Manipulador de eventos para dados enviados pelo servidor.
+            // A funcao de retorno de chamada e invocada sempre que o servidor emite dados
+            // para o cliente. Os dados sao entao exibidos no campo "Recebido"
+            // secao da pagina.
+
+            socket.on('resposta', function(msg) {
+                $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
+            });
+
+            
+            
+           // Manipuladores para os diferentes formularios na pagina.
+           // Estes aceitam dados do usuario e enviam para o servidor em um
+           // variedade de maneiras
+          
+	    $('form#QRCode7980g').submit(function(event) {
+                socket.emit('QRCode7980g');
+                return false;
+            });
+            $('form#balanca_2098').submit(function(event) {
+                socket.emit('balanca_2098');
+                return false;
+            });
+            $('form#cardUser').submit(function(event) {
+                socket.emit('cardUser');
+                return false;
+            });
+            $('form#disconnect').submit(function(event) {
+                socket.emit('disconnect_request');
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Flask-SocketIO</h1>
+    <p>O modo assincrono e: <b>{{ async_mode }}</b></p>
+        <h2>Enviando para o server:</h2>
+
+    <form id="QRCode7980g" method="POST" action='#'>
+        <input type="submit" value="QRCode">
+    </form>
+    <form id="balanca_2098" method="POST" action='#'>
+        <input type="submit" value="Balanca Toledo">
+    </form>
+    <form id="cardUser" method="POST" action='#'>
+        <input type="submit" value="Cartao Usuario">
+    </form>
+    <form id="disconnect" method="POST" action="#">
+        <input type="submit" value="Disconnect">
+    </form>
+    <h2>Recebendo do server:</h2>
+    <div id="log"></div>
+</body>
+
+</html>
