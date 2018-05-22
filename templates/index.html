@@ -35,7 +35,9 @@
             socket.on('QRCode7980g', function(msg) {
                 $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
             });
-
+			socket.on('cardUser', function(msg) {
+                $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
+            });
             socket.on('disconect', function(msg) {
                 $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
             });
