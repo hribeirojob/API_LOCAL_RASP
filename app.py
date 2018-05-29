@@ -1,21 +1,31 @@
 #!/usr/bin/env python
 from threading import Lock
-from flask import Flask, render_template, session, request
-from flask_socketio import SocketIO, emit, join_room, leave_room, \
-    close_room, rooms, disconnect
+from flask import Flask, render_template, request
+from flask_socketio import SocketIO, emit, disconnect
 import serial,time,MFRC522,signal
 import RPi.GPIO as GPIO
 
-
 async_mode = None
-
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
+app.config['SECRET_KEY'] = 'secret!'
 
-
+def getBalanca():
+   global enviar_peso
+   enviar_peso = 0
+   while True:
+      time.sleep(1)
+      if enviar_peso == 1:
+         try:
+            Port_bal = serial.Serial('/dev/ttyUSB0',9600)
+            bal = Port_bal.readline(7)[1:7]
+            time.sleep(0.25)
+         except serial.SerialException:
+            bal = 'ERRO'
+         socketio.emit('peso_balanca',{'data': bal})
+         print (bal)
 
 
 @app.route('/')
@@ -28,30 +38,27 @@ def read_qr():
    print('Requisitou QRCode 7980g')
    try:
        Obj_porta = serial.Serial('/dev/ttyACM0', 9600)
-       qrcode =  Obj_porta.readline(6)
+       qrcode =  Obj_porta.readline(7)
    except serial.SerialException:
        qrcode = 'ERRO QRCode'
    emit('QRCode7980g', {'data': qrcode})
    print (qrcode)
 
+
+
 #Leitor da balanca
 @socketio.on('balanca_2098')
-def getBalanca_2098():
-   print('reqisitou Peso Balanca Toledo_2098')
-   while 1:
-      try:
-          Port_bal = serial.Serial('/dev/ttyUSB0',9600)
-          bal = Port_bal.readline(7)
-          time.sleep(0.25)
-      except serial.SerialException:
-          bal = 'ERRO Balanca nao conectada'
-      emit('balanca_2098',{'data': bal})
-      print (bal)
+def Balanca(entrada):
+   global enviar_peso 
+   enviar_peso = int(entrada.get("peso"))
+            
+
+
 
 #Leitor do cartao de Usuario
 @socketio.on('cardUser')
 def Get_Card_User():
-   
+
    print('Requisitou Cartao Usuario')
    continue_reading = True
 
@@ -76,8 +83,6 @@ def Get_Card_User():
           continue_reading = False
           GPIO.cleanup()
 
-    
-
 @socketio.on('disconnect_request')
 def disconnect_request():
     print('Cliente Pediu Para Desconectar')
@@ -88,19 +93,30 @@ def disconnect_request():
 
 
 #Conexao com o Cliente
+#@socketio.on('connect')
+#def test_connect():
+#    print ('Cliente Pediu para Conectar')
+#    emit('connect', {'data': 'Connected'})
+#    print ('Cliente conectado',request.sid)
+
+
+
 @socketio.on('connect')
 def test_connect():
+    global thread
+    with thread_lock:
+        if thread is None:
+            thread = socketio.start_background_task(target=getBalanca)
     print ('Cliente Pediu para Conectar')
-    emit('connect', {'data': 'Connected'})
+    emit('conectado', {'data': 'Voce esta conectado!'})
     print ('Cliente conectado',request.sid)
 
-@socketio.on('disconnect', namespace='/test')
+@socketio.on('disconnect')
 def test_disconnect():
-    emit('disconect',
+    emit ('disconect',
          {'data': 'Voce foi desconectado!'})
-
     print('Client disconnected', request.sid)
 
-
+    
 if __name__ == '__main__':
     socketio.run(app, host = '0.0.0.0', port = '3000', debug=True)

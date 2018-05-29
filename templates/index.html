@@ -33,30 +33,41 @@
             // secao da pagina.
 
             socket.on('QRCode7980g', function(msg) {
-                $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
+                $('#log').append('<br>' + $('<div/>').text('Recebido: ' + msg.data).html());
             });
-			socket.on('cardUser', function(msg) {
-                $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
+            socket.on('cardUser', function(msg) {
+                $('#log').append('<br>' + $('<div/>').text('Recebido: ' + msg.data).html());
             });
+            
+            socket.on('peso_balanca', function(msg) {
+                $('#log').append('<br>' + $('<div/>').text('Recebido: ' + msg.data).html());
+            });           
+
             socket.on('disconect', function(msg) {
-                $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
+                $('#log').append('<br>' + $('<div/>').text('Recebido: ' + msg.data).html());
+            });
+           
+            socket.on('my_response', function(msg) {
+                $('#log').append('<br>' + $('<div/>').text('Recebido: ' + msg.data).html());
             });
 
-            
+            socket.on('conectado', function(msg) {
+                $('#log').append('<br>' + $('<div/>').text('Recebido: ' + msg.data).html());
+            });
 
 
-            
             
            // Manipuladores para os diferentes formularios na pagina.
            // Estes aceitam dados do usuario e enviam para o servidor em um
            // variedade de maneiras
+            
             
             $('form#QRCode7980g').submit(function(event) {
             socket.emit('QRCode7980g');
             return false;
             });
             $('form#balanca_2098').submit(function(event) {
-                socket.emit('balanca_2098');
+                socket.emit('balanca_2098',{peso:$('#emit_data').val()});
                 return false;
             });
             $('form#cardUser').submit(function(event) {
@@ -75,19 +86,20 @@
     <p>O modo assincrono e: <b>{{ async_mode }}</b></p>
         <h2>Enviando para o server:</h2>
 
-    <form id="QRCode7980g" method="POST" action='#'>
+    <form id="QRCode7980g" method="POST">
         <input type="submit" value="QRCode">
     </form>
-
-    <form id="balanca_2098" method="POST" action='#'>
+    
+    <form id="balanca_2098" method="POST">
+        <input type="text" name="emit_data" id="emit_data" placeholder="Message">
         <input type="submit" value="Balanca Toledo">
     </form>
 
-    <form id="cardUser" method="POST" action='#'>
+    <form id="cardUser" method="POST">
         <input type="submit" value="Cartao Usuario">
     </form>
 
-    <form id="disconnect" method="POST" action='#'>
+    <form id="disconnect" method="POST">
         <input type="submit" value="Disconnect">
     </form>
 
