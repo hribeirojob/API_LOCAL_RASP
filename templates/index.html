@@ -39,7 +39,7 @@
                 $('#log').append('<br>' + $('<div/>').text('Recebido: ' + msg.data).html());
             });
             
-            socket.on('peso_balanca', function(msg) {
+            socket.on('balanca_2098', function(msg) {
                 $('#log').append('<br>' + $('<div/>').text('Recebido: ' + msg.data).html());
             });           
 
@@ -67,7 +67,7 @@
             return false;
             });
             $('form#balanca_2098').submit(function(event) {
-                socket.emit('balanca_2098',{peso:$('#emit_data').val()});
+                socket.emit('balanca_2098',$('#emit_data').val());
                 return false;
             });
             $('form#cardUser').submit(function(event) {
@@ -91,7 +91,7 @@
     </form>
     
     <form id="balanca_2098" method="POST">
-        <input type="text" name="emit_data" id="emit_data" placeholder="Message">
+        <input type="number" name="emit_data" id="emit_data" placeholder="1 = True, 0 = False">
         <input type="submit" value="Balanca Toledo">
     </form>
 

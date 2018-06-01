@@ -24,7 +24,7 @@ def getBalanca():
       time.sleep(0.25)
       if enviar_peso == 1:
          peso = balanca_toledo_v1()
-         socketio.emit('peso_balanca',{'data': peso})
+         socketio.emit('balanca_2098',{'data': peso})
          print (peso)
 
 
@@ -45,8 +45,8 @@ def read_qr():
 @socketio.on('balanca_2098')
 def Balanca(entrada):
    global enviar_peso 
-   enviar_peso = int(entrada.get("peso"))
-
+   enviar_peso = int(entrada)
+   print ('Argumento do peso: ',enviar_peso)
 
 #Leitor do cartao de Usuario
 @socketio.on('cardUser')

@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import MFRC522
+import MFRC522, time
 
 def leitor_mfrc522():
 
    continue_reading = True
    while continue_reading:
-
+       time.sleep(1)
        MIFAREReader = MFRC522.MFRC522()
 
       # Detecta o cartao
@@ -22,5 +22,6 @@ def leitor_mfrc522():
        if status == MIFAREReader.MI_OK:
           id_card =  str(uid[0])+"."+str(uid[1])+"."+str(uid[2])+"."+str(uid[3])
 	  return(id_card)
-	  continue_reading = False
+          continue_reading = False
           GPIO.cleanup()
+          
