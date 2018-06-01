@@ -3,13 +3,12 @@
 from threading import Lock
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, disconnect
+import time
 ######### Modulos proprios ############
 from card_reader import leitor_mfrc522 
 from leitores_qrcode import honeywell_7980g
 from balancas import balanca_toledo_v1
 #######################################
-import time
-
 
 
 app = Flask(__name__)
@@ -27,7 +26,6 @@ def getBalanca():
          socketio.emit('balanca_2098',{'data': peso})
          print (peso)
 
-
 @app.route('/')
 def index():
     return render_template('index.html', async_mode=socketio.async_mode)
@@ -39,7 +37,6 @@ def read_qr():
    qrcode = honeywell_7980g()
    emit('QRCode7980g', {'data': qrcode})
    print (qrcode)
-
 
 #Leitor da balanca
 @socketio.on('balanca_2098')
@@ -74,7 +71,6 @@ def test_connect():
             seg_plano = socketio.start_background_task(target=getBalanca)
     emit('conectado', {'data': 'Voce esta conectado!'})
     print ('Cliente conectado',request.sid)
-
 
     
 if __name__ == '__main__':
