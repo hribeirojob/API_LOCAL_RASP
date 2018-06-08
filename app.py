@@ -5,7 +5,7 @@ from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, disconnect
 import time
 ######### Modulos proprios ############
-from card_reader import leitor_mfrc522 
+from card_reader import leitor_mfrc522
 from leitores_qrcode import honeywell_7980g
 from balancas import balanca_toledo_v1
 #######################################
@@ -15,15 +15,15 @@ app = Flask(__name__)
 socketio = SocketIO(app, async_mode=None, ping_interval=60, ping_timeout=86400)
 seg_plano = None
 thread_lock = Lock()
-enviar_peso = 1
+enviar_peso = 0
 peso_anterior = 0
 
 def getBalanca():
    global enviar_peso
    global peso_anterior
    while True:
-     time.sleep(0.25)
-     if enviar_peso == 1:
+      time.sleep(0.25)
+      if enviar_peso == 1:
          peso = balanca_toledo_v1()
          if peso_anterior != peso:
             socketio.emit('balanca_2098',{'data': peso})
@@ -54,10 +54,10 @@ def read_qr():
 def Balanca(entrada):
    global enviar_peso
    enviar_peso = int(entrada)
-      if enviar_peso == 1:
-         print ('Enviar peso:',enviar_peso)
-     else :
-	    print ('Nao enviar peso:',enviar_peso)
+   if enviar_peso == 1:
+      print ('Enviar peso:',enviar_peso)
+   else:
+      print ('Nao enviar peso:',enviar_peso)
 
 
 #Leitor do cartao de Usuario
