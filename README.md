@@ -16,6 +16,9 @@ Python2.7 - Python-pip - Flask - Flask-Socket-IO - PySerial
   Abaixo os comandos para instalar os pacotes
 # sudo apt-get install python-pip -y && sudo pip install flask-socketio && sudo apt-get install python2.7 && python -m pip install pyserial
 
+Para instalar as dependencias que estao listadas dentro do arquivo requirements use o comando
+$ pip install -r requirements.txt
+
 Para o leitor de cartao RF-ID use o seguinte comando para clonar o modulo nescessário
 # clone https://github.com/mxgxw/MFRC522-python
 
