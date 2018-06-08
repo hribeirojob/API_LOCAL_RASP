@@ -35,6 +35,12 @@ def getBalanca():
 #def index():
 #    return render_template('index.html', async_mode=socketio.async_mode)
 
+
+@app.route('/')
+def index():
+    return render_template('index.html', async_mode=socketio.async_mode)
+
+
 #Leitor do QR Code
 @socketio.on('QRCode7980g')
 def read_qr():
@@ -43,13 +49,15 @@ def read_qr():
    print(qrcode)
    emit('QRCode7980g', {'data': qrcode})
 
-
 #Leitor da balanca
 @socketio.on('balanca_2098')
 def Balanca(entrada):
    global enviar_peso
    enviar_peso = int(entrada)
-   print ('Argumento do peso: ',enviar_peso)
+      if enviar_peso == 1:
+         print ('Enviar peso:',enviar_peso)
+     else :
+	    print ('Nao enviar peso:',enviar_peso)
 
 
 #Leitor do cartao de Usuario
@@ -59,7 +67,6 @@ def Get_Card_User():
     id_card = leitor_mfrc522()
     emit('cardUser',{'data': id_card})
     print (id_card)
-
 
 
 #Requisicao para desconectar
@@ -80,7 +87,6 @@ def test_connect():
           seg_plano = socketio.start_background_task(target=getBalanca)
     emit('conectado', {'data': 'Voce esta conectado!'})
     print ('Cliente conectado',request.sid)
-
 
 if __name__ == '__main__':
     socketio.run(app, host = '0.0.0.0', port = '3000', debug=True)
