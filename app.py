@@ -2,7 +2,7 @@
 
 from threading import Lock
 from flask import Flask, render_template, request
-from flask_socketio import SocketIO, emit, disconnect
+from flask_socketio import SocketIO, emit, disconnect, close_room, leave_room, join_room
 import time
 ######### Modulos proprios ############
 from card_reader import leitor_mfrc522
@@ -12,7 +12,7 @@ from balancas import balanca_toledo_v1
 
 
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode=None, ping_interval=60, ping_timeout=86400)
+socketio = SocketIO(app, async_mode=None)
 seg_plano = None
 thread_lock = Lock()
 enviar_peso = 0
@@ -31,11 +31,6 @@ def getBalanca():
             print (peso)
 
 
-#@app.route('/')
-#def index():
-#    return render_template('index.html', async_mode=socketio.async_mode)
-
-
 @app.route('/')
 def index():
     return render_template('index.html', async_mode=socketio.async_mode)
@@ -45,6 +40,7 @@ def index():
 @socketio.on('QRCode7980g')
 def read_qr():
    print('Requisitou QRCode 7980g')
+   join_room('qrcode',sid=request.sid)
    qrcode = honeywell_7980g()
    print(qrcode)
    emit('QRCode7980g', {'data': qrcode})
@@ -63,6 +59,7 @@ def Balanca(entrada):
 #Leitor do cartao de Usuario
 @socketio.on('cardUser')
 def Get_Card_User():
+    close_room('qrcode')
     print('Usuraio requisitou o cartao RFID')
     id_card = leitor_mfrc522()
     emit('cardUser',{'data': id_card})

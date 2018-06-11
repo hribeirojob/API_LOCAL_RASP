@@ -8,5 +8,5 @@ def honeywell_7980g():
       Obj_porta = serial.Serial('/dev/ttyACM0', 9600)
       qrcode =  Obj_porta.readline(7)
    except serial.SerialException:
-      qrcode = 'ERRO QRCode'
+      qrcode = 'error500'
    return(qrcode)   

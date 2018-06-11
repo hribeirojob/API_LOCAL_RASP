@@ -11,6 +11,6 @@ def balanca_toledo_v1():
       bal = Port_bal.readline(7)[1:7]
       time.sleep(0.25)
    except serial.SerialException:
-       bal = 'ERRO'
+       bal = 'error500'
    return(bal)
 
