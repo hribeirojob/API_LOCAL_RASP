@@ -6,7 +6,7 @@ import serial
 def honeywell_7980g(): 
    try:
       Obj_porta = serial.Serial('/dev/ttyACM0', 9600)
-      qrcode =  Obj_porta.readline(7)
+      qrcode =  Obj_porta.readline(5)
    except serial.SerialException:
       qrcode = 'error500'
    return(qrcode)   
