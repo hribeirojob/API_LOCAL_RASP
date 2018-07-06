@@ -22,7 +22,7 @@ def leitor_mfrc522():
 
       # Se conseguir o  UID do cartao, continue
        if status == MIFAREReader.MI_OK:
-          id_card =  str(uid[0])+"."+str(uid[1])+"."+str(uid[2])+"."+str(uid[3])
+          id_card =  str(uid[0])+str(uid[1])+str(uid[2])+str(uid[3])
 	  continue_reading = False
           GPIO.cleanup()
           return(id_card)

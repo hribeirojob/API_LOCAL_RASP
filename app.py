@@ -2,7 +2,7 @@
 
 from threading import Lock
 from flask import Flask, render_template, request
-from flask_socketio import SocketIO, emit, disconnect, close_room, leave_room, join_room
+from flask_socketio import SocketIO, emit, disconnect
 import time
 ######### Modulos proprios ############
 from card_reader import leitor_mfrc522
@@ -14,7 +14,7 @@ from balancas import balanca_toledo_v1
 
 ###############VARIAVEIS###############
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode=None)
+socketio = SocketIO(app)
 task_balanca = None
 task_qrcode   = None
 task_rfid   = None
@@ -22,7 +22,7 @@ thread_lock_peso = Lock()
 thread_lock_qrcode = Lock()
 thread_lock_rfid = Lock()
 enviar_peso = 0
-peso_anterior = 0
+peso_anterior = None
 enviar_qr = 0
 enviar_rfid = 0
 
@@ -34,14 +34,15 @@ def getBalanca():
    global peso_anterior
 
    while True:
-      time.sleep(0.25)
+      time.sleep(0.10)
       if enviar_peso == 1 and enviar_qr == 0 and enviar_rfid == 0:
          peso = balanca_toledo_v1()
          if peso_anterior != peso:
             socketio.emit('balanca_2098',{'data': peso})
             peso_anterior = peso
             print (peso)
-
+      else:
+         peso_anterior = None
 
 
 def read_qr():
@@ -50,13 +51,15 @@ def read_qr():
    global enviar_rfid
 
    while True:
-      time.sleep(0.25)
+      time.sleep(0.10)
       if enviar_qr == 1 and enviar_rfid == 0 and enviar_peso == 0:
          qrcode = honeywell_7980g()
-         socketio.emit('QRCode7980g', {'data': qrcode})
-         enviar_qr = 0
-         print(qrcode)
-
+         if qrcode == '' or qrcode == None:
+            pass
+         else:
+            socketio.emit('QRCode7980g', {'data': qrcode})
+            enviar_qr = 0
+            print('qrcode',qrcode)
 
 def cartao_rfid():
     global enviar_qr
@@ -64,7 +67,7 @@ def cartao_rfid():
     global enviar_rfid
 
     while True:
-       time.sleep(0.25)
+       time.sleep(0.10)
        if enviar_rfid == 1 and enviar_qr == 0 and enviar_peso == 0:
           id_card = leitor_mfrc522()
           socketio.emit('cardUser',{'data': id_card})
